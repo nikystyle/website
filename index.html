@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXE EDITORIAL — Etalase Afiliasi Kelas Atas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Syne & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        syne: ['Syne', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        void: '#0A0A0C',
+                        surface: '#121216',
+                        surfaceLight: '#1C1C22',
+                        accentGold: '#D4AF37',
+                        accentIndigo: '#6366F1',
+                        shopee: '#FF5722',
+                        tokopedia: '#00AA5B',
+                        tiktok: '#EE1D52'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* 1. PERSPECTIVE & 3D DEPTH MANDATE */
+        .hero-perspective-container {
+            perspective: 2000px;
+            transform-style: preserve-3d;
+        }
+
+        .tilt-card-3d {
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .tilt-card-3d:hover {
+            transform: rotateX(4deg) rotateY(-4deg) translateZ(12px);
+        }
+
+        /* 2. NO STANDARD SHADOWS - DEPTH VIA BORDERS & GLASS */
+        .glass-panel {
+            background: rgba(18, 18, 22, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-panel-hover:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(28, 28, 34, 0.75);
+        }
+
+        /* 3. HEADER MIX-BLEND-DIFFERENCE VISIBILITY */
+        .header-blend-text {
+            mix-blend-mode: difference;
+            color: #FFFFFF;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-void text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-white selection:text-black">
+
+    <!-- HEADER NAVBAR -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-void/40 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Logo & Brand (4. UPPERCASE HEADINGS MANDATE) -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="header-blend-text flex items-center gap-3 group">
+                        <div class="w-10 h-10 border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center text-white transition-all duration-300 group-hover:border-white/50">
+                            <i class="fa-solid fa-diamond text-xs text-amber-400"></i>
+                        </div>
+                        <span class="font-syne text-lg md:text-xl font-extrabold uppercase tracking-widest">
+                            LUXE<span class="text-slate-400 font-light">EDIT</span>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Live Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-md mx-6">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" oninput="handleSearch()" 
+                               placeholder="CARI PILIHAN PRODUK..." 
+                               class="w-full uppercase text-xs tracking-wider font-semibold pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:bg-white/10 focus:outline-none focus:border-white/30 transition-all duration-300">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Mode & Controls -->
+                <div class="flex items-center gap-3">
+                    <button id="adminToggleBtn" onclick="toggleAdminMode()" 
+                            class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/20 text-white font-syne text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-sliders text-amber-400 text-xs"></i>
+                        <span id="adminToggleText">MODE ADMIN</span>
+                    </button>
+
+                    <button id="addNewProductBtn" onclick="openProductFormModal()" 
+                            class="hidden px-4 py-2 bg-white text-black hover:bg-slate-200 border border-white font-syne text-xs font-extrabold uppercase tracking-widest flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>TAMBAH ITEM</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="md:hidden pb-4">
+                <div class="relative w-full">
+                    <input type="text" id="mobileSearchInput" oninput="handleMobileSearch()" 
+                           placeholder="CARI ARSIP AFILIASI..." 
+                           class="w-full uppercase text-[11px] tracking-wider font-semibold pl-9 pr-4 py-2 bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Status Banner -->
+    <div id="adminIndicatorBar" class="hidden fixed top-20 left-0 w-full z-40 bg-amber-500/10 backdrop-blur-md border-b border-amber-500/30 text-amber-300 text-[11px] font-bold uppercase tracking-widest py-2 px-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <span class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-amber-400"></i> KONTROL ARSIP ADMIN AKTIF. EDIT ATAU TAMBAH ITEM SECARA LANGSUNG.
+            </span>
+            <button onclick="resetToDefaultData()" class="underline text-amber-200 hover:text-white transition-colors text-[10px]">
+                RESET ARSIP DEMO
+            </button>
+        </div>
+    </div>
+
+    <!-- 1. HERO SECTION WITH PERSPECTIVE: 2000PX CONTAINER -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden border-b border-white/10 bg-gradient-to-b from-surface via-void to-void">
+        <!-- Subtle Ambient Lighting Effect -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/10 blur-[140px] pointer-events-none rounded-full"></div>
+        <div class="absolute top-1/4 right-10 w-[400px] h-[300px] bg-amber-500/5 blur-[120px] pointer-events-none rounded-full"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 hero-perspective-container">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Editorial Text Overlay (UPPERCASE TYPOGRAPHY) -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/15 backdrop-blur-md text-amber-400 text-[11px] font-mono font-bold uppercase tracking-widest">
+                        <i class="fa-solid fa-gem text-xs"></i> KOLEKSI EDITORIAL KURASI
+                    </div>
+
+                    <h1 class="font-syne text-3xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-white leading-none">
+                        PILIHAN AFILIASI <br>
+                        <span class="bg-gradient-to-r from-white via-slate-300 to-slate-500 bg-clip-text text-transparent">
+                            KELAS ATAS TERKURASI
+                        </span>
+                    </h1>
+
+                    <p class="text-slate-400 text-xs sm:text-sm font-light tracking-wide max-w-xl mx-auto lg:mx-0 leading-relaxed uppercase">
+                        KEBUTUHAN, TEKNOLOGI DAN PAKAIAN PREMIUM PILIHAN EKSKLUSIF YANG DIVERIFIKASI LANGSUNG DARI MITRA MARKETPLACE RESMI.
+                    </p>
+
+                    <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                        <a href="#catalog" class="px-8 py-3.5 bg-white text-black border border-white font-syne text-xs font-extrabold uppercase tracking-widest hover:bg-slate-200 transition-all duration-300 flex items-center gap-3">
+                            <span>JELAJAHI PILIHAN</span>
+                            <i class="fa-solid fa-arrow-down text-xs"></i>
+                        </a>
+                        <div class="px-4 py-3 bg-white/5 border border-white/10 backdrop-blur-md text-slate-300 font-mono text-[11px] uppercase tracking-wider">
+                            <span class="text-emerald-400 font-bold">100%</span> TAUTAN RESMI LANGSUNG
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Floating 3D Depth Card Glass Layer -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="tilt-card-3d glass-panel p-6 max-w-sm w-full relative group">
+                        <div class="absolute -top-3 -right-3 px-3 py-1 bg-amber-400 text-black font-syne text-[10px] font-extrabold uppercase tracking-widest border border-amber-300 z-10">
+                            SOROTAN UTAMA
+                        </div>
+
+                        <div class="h-64 overflow-hidden border border-white/10 relative mb-5 bg-surface">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80" 
+                                 alt="PRODUK SOROTAN UTAMA" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90">
+                            <div class="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent"></div>
+                            <span class="absolute bottom-3 left-3 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-[10px] font-mono font-bold uppercase tracking-widest text-white">
+                                ARSIP TEKNOLOGI
+                            </span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="font-syne text-base font-extrabold text-white uppercase tracking-wider leading-snug">
+                                NEURAL STUDIO WIRELESS HEADPHONES
+                            </h3>
+                            <p class="text-slate-400 text-[11px] uppercase tracking-wide line-clamp-2">
+                                DRIVER AUDIO HIGH-FIDELITY DENGAN PEREDAM AKUSTIK DAN AKSEN PERMUKAAN KACA.
+                            </p>
+                            <div class="flex items-center justify-between pt-2 border-t border-white/10">
+                                <span class="text-xs font-mono font-bold text-slate-400 uppercase">HARGA RESMI</span>
+                                <span class="font-syne text-lg font-extrabold text-white uppercase">RP 3.499.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CATALOG & FILTER SECTION -->
+    <section id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full flex-1">
+        
+        <!-- Header & Platform Selector -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-white/10">
+            <div class="space-y-2">
+                <span class="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest">KATALOG ARSIP</span>
+                <h2 class="font-syne text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight">
+                    PRODUK PILIHAN
+                </h2>
+            </div>
+
+            <!-- Platform Filters -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="filterStore('semua')" id="btn-store-semua" 
+                        class="store-btn px-4 py-2 border border-white/20 bg-white text-black font-syne text-[11px] font-extrabold uppercase tracking-widest transition-all">
+                    SEMUA TOKO
+                </button>
+                <button onclick="filterStore('Shopee')" id="btn-store-shopee" 
+                        class="store-btn px-4 py-2 border border-white/10 glass-panel text-slate-300 hover:text-shopee hover:border-shopee/40 font-syne text-[11px] font-bold uppercase tracking-widest transition-all">
+                    SHOPEE
+                </button>
+                <button onclick="filterStore('Tokopedia')" id="btn-store-tokopedia" 
+                        class="store-btn px-4 py-2 border border-white/10 glass-panel text-slate-300 hover:text-tokopedia hover:border-tokopedia/40 font-syne text-[11px] font-bold uppercase tracking-widest transition-all">
+                    TOKOPEDIA
+                </button>
+                <button onclick="filterStore('TikTok')" id="btn-store-tiktok" 
+                        class="store-btn px-4 py-2 border border-white/10 glass-panel text-slate-300 hover:text-tiktok hover:border-tiktok/40 font-syne text-[11px] font-bold uppercase tracking-widest transition-all">
+                    TIKTOK SHOP
+                </button>
+            </div>
+        </div>
+
+        <!-- Categories & Counter -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 py-6 border-b border-white/10">
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none" id="categoryContainer">
+                <!-- Dynamic Category Filters injected by JS -->
+            </div>
+
+            <div class="flex items-center justify-between md:justify-end gap-4 text-xs font-mono uppercase text-slate-400">
+                <span id="productCount">MENAMPILKAN 0 ARSIP</span>
+                <button id="resetFilterBtn" onclick="resetFilters()" class="hidden text-amber-400 hover:underline">
+                    RESET FILTER <i class="fa-solid fa-rotate-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PRODUCT GRID (EDITORIAL HIGH DENSITY) -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-8">
+            <!-- Dynamic Cards Injected by JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-24 glass-panel border border-white/10 my-8">
+            <i class="fa-solid fa-box-open text-4xl text-slate-600 mb-4"></i>
+            <h3 class="font-syne text-lg font-bold text-white uppercase tracking-wider">TIDAK ADA ITEM AFILIASI DITEMUKAN</h3>
+            <p class="text-slate-400 text-xs font-mono uppercase mt-2">SESUAIKAN KRITERIA PENCARIAN ATAU FILTER ANDA.</p>
+            <button onclick="resetFilters()" class="mt-6 px-6 py-2.5 bg-white text-black font-syne text-xs font-extrabold uppercase tracking-widest hover:bg-slate-200 transition-colors">
+                TAMPILKAN SEMUA PRODUK
+            </button>
+        </div>
+    </section>
+
+    <!-- MODAL: ADMIN FORM (ADD / EDIT AFFILIATE PRODUCT) -->
+    <div id="productFormModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-panel border border-white/20 max-w-lg w-full overflow-hidden my-8">
+            <div class="px-6 py-5 border-b border-white/10 flex justify-between items-center bg-surface">
+                <h3 id="formModalTitle" class="font-syne font-extrabold text-sm uppercase tracking-widest text-white flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-amber-400"></i> EDIT ITEM ARSIP AFILIASI
+                </h3>
+                <button onclick="closeProductFormModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="productForm" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editProductId">
+
+                <!-- Product Name -->
+                <div>
+                    <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">NAMA PRODUK *</label>
+                    <input type="text" id="formTitle" required placeholder="CTH: WIRELESS STUDIO HEADPHONES" 
+                           class="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 text-white placeholder-slate-600 text-xs font-mono uppercase focus:outline-none focus:border-white">
+                </div>
+
+                <!-- Platform & Category -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">PLATFORM / TOKO *</label>
+                        <select id="formStore" class="w-full px-3 py-2.5 bg-surfaceLight border border-white/15 text-white text-xs font-mono uppercase focus:outline-none focus:border-white">
+                            <option value="Shopee">SHOPEE</option>
+                            <option value="Tokopedia">TOKOPEDIA</option>
+                            <option value="TikTok">TIKTOK SHOP</option>
+                            <option value="Amazon">AMAZON</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">KATEGORI *</label>
+                        <select id="formCategory" class="w-full px-3 py-2.5 bg-surfaceLight border border-white/15 text-white text-xs font-mono uppercase focus:outline-none focus:border-white">
+                            <option value="Gawai">GAWAI</option>
+                            <option value="Teknologi">TEKNOLOGI</option>
+                            <option value="Fashion">FASHION</option>
+                            <option value="Rumah">RUMAH</option>
+                            <option value="Kecantikan">KECANTIKAN</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">HARGA PROMO (RP) *</label>
+                        <input type="text" id="formPrice" required placeholder="CTH: 1.250.000" 
+                               class="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 text-white placeholder-slate-600 text-xs font-mono uppercase focus:outline-none focus:border-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">HARGA ASLI (RP)</label>
+                        <input type="text" id="formOriginalPrice" placeholder="CTH: 2.000.000" 
+                               class="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 text-white placeholder-slate-600 text-xs font-mono uppercase focus:outline-none focus:border-white">
+                    </div>
+                </div>
+
+                <!-- URLs -->
+                <div>
+                    <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">URL LANGSUNG AFILIASI *</label>
+                    <input type="url" id="formAffiliateUrl" required placeholder="https://shope.ee/xxx ATAU TAUTAN ANDA" 
+                           class="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 text-white placeholder-slate-600 text-xs font-mono focus:outline-none focus:border-white">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">URL GAMBAR *</label>
+                    <input type="url" id="formImage" required placeholder="https://images.unsplash.com/..." 
+                           class="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 text-white placeholder-slate-600 text-xs font-mono focus:outline-none focus:border-white">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-[10px] font-mono font-bold text-slate-300 uppercase tracking-widest mb-1.5">CATATAN EDITORIAL SINGKAT</label>
+                    <textarea id="formDescription" rows="2" placeholder="SPESIFIKASI UTAMA ATAU ALASAN EDITORIAL..." 
+                              class="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 text-white placeholder-slate-600 text-xs font-mono uppercase focus:outline-none focus:border-white"></textarea>
+                </div>
+
+                <div class="pt-4 border-t border-white/10 flex justify-end gap-3">
+                    <button type="button" onclick="closeProductFormModal()" 
+                            class="px-5 py-2.5 border border-white/20 text-slate-300 hover:text-white font-syne text-xs font-bold uppercase tracking-widest">
+                        BATAL
+                    </button>
+                    <button type="submit" 
+                            class="px-6 py-2.5 bg-white text-black hover:bg-slate-200 font-syne text-xs font-extrabold uppercase tracking-widest">
+                        SIMPAN ARSIP
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: VISITOR ITEM PREVIEW -->
+    <div id="productModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-4">
+        <div class="glass-panel border border-white/20 max-w-xl w-full overflow-hidden relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-9 h-9 border border-white/20 bg-black/60 hover:bg-white hover:text-black text-white flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            <div id="modalContent" class="p-6 md:p-8">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-surface border-t border-white/10 text-slate-400 text-xs mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <span class="font-syne text-lg font-extrabold uppercase tracking-widest text-white">LUXE<span class="text-slate-500">EDIT</span></span>
+                    <p class="text-slate-500 font-mono text-[11px] uppercase tracking-wider mt-1">PLATFORM AFILIASI KELAS ATAS TERKURASI</p>
+                </div>
+                <p class="text-slate-500 font-mono text-[10px] uppercase tracking-wider max-w-md">
+                    PENAFIAN: PLATFORM INI BERISI TAUTAN AFILIASI LANGSUNG. PEMBELIAN YANG DISELESAIKAN MELALUI TAUTAN KAMI DAPAT MEMBERIKAN KOMISI KEPADA KAMI TANPA BIAYA TAMBAHAN BAGI ANDA.
+                </p>
+                <p class="text-slate-500 font-mono text-[10px] uppercase tracking-wider">&copy; 2026 LUXE EDIT EDITORIAL.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const defaultProducts = [
+            {
+                id: 1,
+                title: "SOUNDCORE ANKER R50I ANC WIRELESS EARBUDS",
+                category: "Gawai",
+                store: "Shopee",
+                price: "RP 199.000",
+                originalPrice: "RP 499.000",
+                discount: "60%",
+                image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=800&q=80",
+                affiliateUrl: "https://shopee.co.id",
+                description: "TWS RINGKAS DENGAN SUARA BASS DALAM, TAHAN AIR IPX5 DAN TOTAL WAKTU PUTAR 30 JAM."
+            },
+            {
+                id: 2,
+                title: "KEYCHRON K2 MECHANICAL WIRELESS KEYBOARD",
+                category: "Teknologi",
+                store: "Tokopedia",
+                price: "RP 1.150.000",
+                originalPrice: "RP 1.450.000",
+                discount: "20%",
+                image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80",
+                affiliateUrl: "https://tokopedia.com",
+                description: "TATA LETAK KOMPAK TACTILE 75% DENGAN LAMPU LATAR RGB DAN KONEKTIVITAS BLUETOOTH GANDA MAC/WINDOWS."
+            },
+            {
+                id: 3,
+                title: "MINIMALIST MATTE BLACK AUTOMATIC TIMEPIECE",
+                category: "Fashion",
+                store: "Shopee",
+                price: "RP 845.000",
+                originalPrice: "RP 1.200.000",
+                discount: "30%",
+                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",
+                affiliateUrl: "https://shopee.co.id",
+                description: "HASIL AKHIR MATTE BAJA TAHAN KARAT DENGAN LAPISAN KACA SAFIR DAN SEGEL DALAM TAHAN AIR."
+            },
+            {
+                id: 4,
+                title: "DIGITAL AIR FRYER LOW WATT MATTE OBSIDIAN",
+                category: "Rumah",
+                store: "TikTok",
+                price: "RP 489.000",
+                originalPrice: "RP 899.000",
+                discount: "45%",
+                image: "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80",
+                affiliateUrl: "https://tiktok.com",
+                description: "SISTEM SIRKULASI UDARA CEPAT DENGAN KONTROL LAYAR SENTUH DAN PEMANASAN HEMAT ENERGI."
+            }
+        ];
+
+        const categories = ["SEMUA", "Gawai", "Teknologi", "Fashion", "Rumah", "Kecantikan"];
+
+        // State Variables
+        let products = [];
+        let isAdminMode = false;
+        let activeCategory = "SEMUA";
+        let activeStore = "semua";
+        let searchQuery = "";
+
+        window.onload = function() {
+            loadProductsFromStorage();
+            renderCategories();
+            renderProducts();
+        };
+
+        function loadProductsFromStorage() {
+            const saved = localStorage.getItem("luxe_affiliate_products");
+            if (saved) {
+                try {
+                    products = JSON.parse(saved);
+                } catch(e) {
+                    products = [...defaultProducts];
+                }
+            } else {
+                products = [...defaultProducts];
+                saveProductsToStorage();
+            }
+        }
+
+        function saveProductsToStorage() {
+            localStorage.setItem("luxe_affiliate_products", JSON.stringify(products));
+        }
+
+        function resetToDefaultData() {
+            if (confirm("RESET SEMUA ARSIP PRODUK KE ITEM DEMO BAWAAN?")) {
+                products = [...defaultProducts];
+                saveProductsToStorage();
+                renderProducts();
+            }
+        }
+
+        function toggleAdminMode() {
+            isAdminMode = !isAdminMode;
+            const btnText = document.getElementById("adminToggleText");
+            const addBtn = document.getElementById("addNewProductBtn");
+            const indicator = document.getElementById("adminIndicatorBar");
+
+            if (isAdminMode) {
+                btnText.innerText = "KELUAR ADMIN";
+                addBtn.classList.remove("hidden");
+                indicator.classList.remove("hidden");
+            } else {
+                btnText.innerText = "MODE ADMIN";
+                addBtn.classList.add("hidden");
+                indicator.classList.add("hidden");
+            }
+
+            renderProducts();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById("categoryContainer");
+            container.innerHTML = categories.map(cat => {
+                const isActive = cat.toUpperCase() === activeCategory.toUpperCase();
+                const btnClass = isActive 
+                    ? "bg-white text-black border-white font-extrabold" 
+                    : "glass-panel text-slate-300 border-white/10 hover:border-white/30";
+                
+                return `
+                    <button onclick="selectCategory('${cat}')" 
+                            class="px-4 py-1.5 border font-syne text-[11px] uppercase tracking-widest transition-all ${btnClass}">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById("productGrid");
+            const emptyState = document.getElementById("emptyState");
+            const resetBtn = document.getElementById("resetFilterBtn");
+            const countText = document.getElementById("productCount");
+
+            const filtered = products.filter(p => {
+                const matchCategory = activeCategory === "SEMUA" || p.category.toUpperCase() === activeCategory.toUpperCase();
+                const matchStore = activeStore === "semua" || p.store.toUpperCase() === activeStore.toUpperCase();
+                const matchSearch = p.title.toUpperCase().includes(searchQuery.toUpperCase()) || 
+                                    p.category.toUpperCase().includes(searchQuery.toUpperCase());
+
+                return matchCategory && matchStore && matchSearch;
+            });
+
+            countText.innerText = `MENAMPILKAN ${filtered.length} ARSIP`;
+            if (activeCategory !== "SEMUA" || activeStore !== "semua" || searchQuery !== "") {
+                resetBtn.classList.remove("hidden");
+            } else {
+                resetBtn.classList.add("hidden");
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = "";
+                emptyState.classList.remove("hidden");
+                return;
+            }
+
+            emptyState.classList.add("hidden");
+
+            grid.innerHTML = filtered.map(product => {
+                const storeUpper = product.store.toUpperCase();
+                let storeBadgeColor = 'border-white/20 bg-white/10 text-white';
+                let storeIcon = 'fa-shop';
+
+                if (storeUpper === 'SHOPEE') {
+                    storeBadgeColor = 'border-shopee/40 bg-shopee/10 text-shopee';
+                    storeIcon = 'fa-bag-shopping';
+                } else if (storeUpper === 'TOKOPEDIA') {
+                    storeBadgeColor = 'border-tokopedia/40 bg-tokopedia/10 text-tokopedia';
+                    storeIcon = 'fa-shop';
+                } else if (storeUpper === 'TIKTOK') {
+                    storeBadgeColor = 'border-tiktok/40 bg-tiktok/10 text-tiktok';
+                    storeIcon = 'fa-brands fa-tiktok';
+                }
+
+                // Admin Action Buttons
+                const adminActions = isAdminMode ? `
+                    <div class="flex gap-2 pt-3 border-t border-white/10 mt-3">
+                        <button onclick="openProductFormModal(${product.id})" class="flex-1 py-1.5 px-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-syne text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-pen"></i> EDIT
+                        </button>
+                        <button onclick="deleteProduct(${product.id})" class="py-1.5 px-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-300 font-syne text-[10px] font-bold uppercase tracking-widest transition-colors">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="tilt-card-3d glass-panel glass-panel-hover flex flex-col justify-between overflow-hidden relative group">
+                        <div>
+                            <!-- Image Container -->
+                            <div class="relative h-52 overflow-hidden border-b border-white/10 bg-surface">
+                                <img src="${product.image}" alt="${product.title}" loading="lazy" 
+                                     onerror="this.src='https://placehold.co/600x400/121216/FFFFFF?text=GAMBAR+ARSIP'"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+                                
+                                <span class="absolute top-3 left-3 px-2.5 py-1 backdrop-blur-md border font-mono text-[9px] font-bold uppercase tracking-widest ${storeBadgeColor}">
+                                    <i class="fa-solid ${storeIcon} mr-1"></i> ${product.store}
+                                </span>
+
+                                ${product.discount ? `
+                                    <span class="absolute top-3 right-3 px-2 py-0.5 bg-amber-400 text-black font-syne text-[10px] font-extrabold uppercase tracking-wider">
+                                        -${product.discount}
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <!-- Content (UPPERCASE ENFORCED) -->
+                            <div class="p-5 space-y-2">
+                                <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">${product.category}</span>
+                                <h3 class="font-syne font-extrabold text-white text-xs uppercase tracking-wider line-clamp-2 leading-snug cursor-pointer hover:text-amber-400 transition-colors" onclick="openModal(${product.id})">
+                                    ${product.title}
+                                </h3>
+
+                                <div class="pt-2">
+                                    ${product.originalPrice ? `<span class="text-[10px] font-mono text-slate-500 line-through uppercase">${product.originalPrice}</span>` : ''}
+                                    <p class="font-syne font-extrabold text-sm text-white uppercase tracking-wider">${product.price}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Actions -->
+                        <div class="p-5 pt-0 space-y-2">
+                            <a href="${product.affiliateUrl}" target="_blank" rel="noopener noreferrer" 
+                               class="w-full py-2.5 px-4 bg-white text-black hover:bg-slate-200 border border-white font-syne text-[11px] font-extrabold uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
+                                <span>BELI SEKARANG / TAUTAN AFILIASI</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                            </a>
+                            ${adminActions}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectCategory(cat) {
+            activeCategory = cat.toUpperCase();
+            renderCategories();
+            renderProducts();
+        }
+
+        function filterStore(store) {
+            activeStore = store;
+            document.querySelectorAll('.store-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-black');
+                btn.classList.add('text-slate-300');
+            });
+            const activeBtn = document.getElementById(`btn-store-${store.toLowerCase()}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white', 'text-black');
+            }
+            renderProducts();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById("searchInput").value;
+            renderProducts();
+        }
+
+        function handleMobileSearch() {
+            searchQuery = document.getElementById("mobileSearchInput").value;
+            renderProducts();
+        }
+
+        function resetFilters() {
+            activeCategory = "SEMUA";
+            activeStore = "semua";
+            searchQuery = "";
+            document.getElementById("searchInput").value = "";
+            document.getElementById("mobileSearchInput").value = "";
+            filterStore('semua');
+            renderCategories();
+            renderProducts();
+        }
+
+        function openProductFormModal(productId = null) {
+            const modal = document.getElementById("productFormModal");
+            const title = document.getElementById("formModalTitle");
+
+            if (productId) {
+                const product = products.find(p => p.id === productId);
+                if (!product) return;
+
+                title.innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400"></i> EDIT ITEM ARSIP AFILIASI`;
+                document.getElementById("editProductId").value = product.id;
+                document.getElementById("formTitle").value = product.title;
+                document.getElementById("formStore").value = product.store;
+                document.getElementById("formCategory").value = product.category;
+                document.getElementById("formPrice").value = product.price.replace("RP ", "").replace("Rp ", "");
+                document.getElementById("formOriginalPrice").value = product.originalPrice ? product.originalPrice.replace("RP ", "").replace("Rp ", "") : "";
+                document.getElementById("formAffiliateUrl").value = product.affiliateUrl;
+                document.getElementById("formImage").value = product.image;
+                document.getElementById("formDescription").value = product.description || "";
+            } else {
+                title.innerHTML = `<i class="fa-solid fa-plus text-amber-400"></i> TAMBAH ITEM AFILIASI BARU`;
+                document.getElementById("productForm").reset();
+                document.getElementById("editProductId").value = "";
+            }
+
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function closeProductFormModal() {
+            const modal = document.getElementById("productFormModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById("editProductId").value;
+            
+            const rawPrice = document.getElementById("formPrice").value.trim().toUpperCase();
+            const rawOrig = document.getElementById("formOriginalPrice").value.trim().toUpperCase();
+            
+            const formattedPrice = rawPrice.startsWith("RP") ? rawPrice : "RP " + rawPrice;
+            const formattedOrig = rawOrig ? (rawOrig.startsWith("RP") ? rawOrig : "RP " + rawOrig) : "";
+
+            let discountTag = "";
+            if (rawOrig && rawPrice) {
+                const numPrice = parseInt(rawPrice.replace(/\D/g, ""));
+                const numOrig = parseInt(rawOrig.replace(/\D/g, ""));
+                if (numOrig > numPrice) {
+                    const pct = Math.round(((numOrig - numPrice) / numOrig) * 100);
+                    discountTag = pct + "%";
+                }
+            }
+
+            const productData = {
+                id: editId ? parseInt(editId) : Date.now(),
+                title: document.getElementById("formTitle").value.trim().toUpperCase(),
+                store: document.getElementById("formStore").value,
+                category: document.getElementById("formCategory").value,
+                price: formattedPrice,
+                originalPrice: formattedOrig,
+                discount: discountTag,
+                affiliateUrl: document.getElementById("formAffiliateUrl").value.trim(),
+                image: document.getElementById("formImage").value.trim(),
+                description: document.getElementById("formDescription").value.trim().toUpperCase()
+            };
+
+            if (editId) {
+                const index = products.findIndex(p => p.id === parseInt(editId));
+                if (index !== -1) products[index] = productData;
+            } else {
+                products.unshift(productData);
+            }
+
+            saveProductsToStorage();
+            renderProducts();
+            closeProductFormModal();
+        }
+
+        function deleteProduct(id) {
+            if (confirm("HAPUS ITEM AFILIASI INI DARI ARSIP?")) {
+                products = products.filter(p => p.id !== id);
+                saveProductsToStorage();
+                renderProducts();
+            }
+        }
+
+        function openModal(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            const modalContent = document.getElementById("modalContent");
+            modalContent.innerHTML = `
+                <div class="space-y-5">
+                    <div class="h-64 border border-white/10 overflow-hidden bg-surface">
+                        <img src="${product.image}" alt="${product.title}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="space-y-3">
+                        <span class="px-3 py-1 border border-white/20 bg-white/5 font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                            ${product.category} • ${product.store}
+                        </span>
+                        <h3 class="font-syne font-extrabold text-lg text-white uppercase tracking-wider leading-snug">${product.title}</h3>
+                        <p class="text-xs font-mono text-slate-400 leading-relaxed uppercase">${product.description || "TIDAK ADA CATATAN EDITORIAL TERSEDIA."}</p>
+                        
+                        <div class="p-4 bg-surfaceLight border border-white/10 mt-2">
+                            ${product.originalPrice ? `<span class="text-xs font-mono text-slate-500 line-through uppercase">${product.originalPrice}</span>` : ''}
+                            <p class="font-syne font-extrabold text-xl text-white uppercase tracking-wider">${product.price}</p>
+                        </div>
+                    </div>
+                    <a href="${product.affiliateUrl}" target="_blank" rel="noopener noreferrer" 
+                       class="w-full py-3 bg-white text-black hover:bg-slate-200 border border-white font-syne text-xs font-extrabold uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
+                        <span>BELI VIA TAUTAN RESMI ${product.store}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            `;
+
+            const modal = document.getElementById("productModal");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function closeModal() {
+            document.getElementById("productModal").classList.add("hidden");
+        }
+    </script>
+</body>
+</html>
